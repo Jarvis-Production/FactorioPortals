@@ -1,0 +1,5 @@
+require("prototypes.sounds")
+require("prototypes.portal-gun")
+require("prototypes.portals")
+require("prototypes.effects")
+require("prototypes.controls")

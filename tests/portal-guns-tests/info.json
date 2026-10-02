@@ -1,0 +1,9 @@
+{
+  "name": "portal-guns-tests",
+  "version": "1.0.0",
+  "title": "Portal Guns: test harness",
+  "author": "Jarvis-Production",
+  "factorio_version": "2.0",
+  "dependencies": ["portal-guns"],
+  "description": "Scripted tests for Portal Guns. Runs on a dedicated (headless) server in --benchmark mode and prints PASS/FAIL lines. Not for normal play: it wipes the area around the spawn."
+}

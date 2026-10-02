@@ -1,0 +1,10 @@
+{
+  "name": "portal-guns",
+  "version": "1.0.0",
+  "title": "Portal Guns",
+  "author": "Jarvis-Production",
+  "homepage": "https://github.com/Jarvis-Production/FactorioPortals",
+  "factorio_version": "2.0",
+  "dependencies": ["base >= 2.0.0", "? space-age"],
+  "description": "A handheld portal gun. Left click shoots a blue portal, right click an orange one; whatever goes into one comes out of the other: you, your car or tank at full speed, spidertrons and biters. Every player has their own pair."
+}

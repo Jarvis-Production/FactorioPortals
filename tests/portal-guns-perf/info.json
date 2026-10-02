@@ -1,0 +1,9 @@
+{
+  "name": "portal-guns-perf",
+  "version": "1.0.0",
+  "title": "Portal Guns: benchmark map",
+  "author": "Jarvis-Production",
+  "factorio_version": "2.0",
+  "dependencies": ["portal-guns"],
+  "description": "Opens many linked portal pairs for tools/run_tests.py --perf. Not for normal play."
+}

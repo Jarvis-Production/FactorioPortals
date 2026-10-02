@@ -1,0 +1,14 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2026-10-02
+  Features:
+    - Portal gun (selection tool): left click shoots a blue portal, right click an orange one, Shift + click closes the portal of that colour.
+    - Shots are real projectiles; a portal opens where the shot lands, slides off small obstacles and fizzles on water, lava, space, buildings, trees, rocks, cliffs or on top of another portal.
+    - Characters, cars, tanks, spidertrons, biters and other units go through linked portals. Cars keep their speed and heading, passengers ride along.
+    - Every player has their own pair. Re-shooting a colour moves that portal. Portals can be mined to close them.
+    - "Close my portals" shortcut and keybinding (Alt + P). Closing also cancels shots still in flight.
+    - Settings: gun range, vehicles and units through portals, cross-surface links (off by default), owner labels in alt mode.
+    - Remote interface "portal-guns" and the custom event "portal-guns-on-teleported" for scenarios and other mods.
+    - English and Russian locale.
+  Optimizations:
+    - A portal only scans for travellers every tick while something is within 16 tiles; otherwise it re-checks every 10 ticks.
