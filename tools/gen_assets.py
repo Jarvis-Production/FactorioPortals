@@ -10,6 +10,9 @@ seeds, so the art can be tweaked and rebuilt in one go:
 
     uv run tools/gen_assets.py            # or: python3 tools/gen_assets.py  (needs pillow + numpy, ffmpeg)
 
+The gun icon, technology, thumbnail and the scorch mark under the portals are then replaced with fal-made art
+from assets/fal/ when it is there (tools/gen_fal_assets.py); without it this script's own art ships.
+
 Sizes follow the prototypes in portal-guns/prototypes/*.lua; tools/check_assets.py verifies they match.
 """
 from __future__ import annotations
@@ -314,12 +317,7 @@ def make_icons() -> None:
     gun = draw_gun(64)
     save(gun, GFX / "icons/portal-gun.png")
 
-    # Technology: the gun between its two portals.
-    tech = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
-    tech.alpha_composite(portal_icon("blue", 132), (4, 118))
-    tech.alpha_composite(portal_icon("orange", 132), (120, 6))
-    tech.alpha_composite(draw_gun(220), (18, 22))
-    save(tech, GFX / "technology/portal-gun.png")
+    save(tech_icon(), GFX / "technology/portal-gun.png")
 
     # Shortcut "close portals": a light ring with a cross, like the base game's white shortcut glyphs.
     for size in (56, 24):
@@ -336,7 +334,20 @@ def make_icons() -> None:
         d.line([(big - q, q), (q, big - q)], fill=c, width=int(w * 1.05))
         save(img.resize((size, size), Image.LANCZOS), GFX / f"icons/shortcut-close-portals-x{size}.png")
 
-    # Mod portal thumbnail (opaque).
+    save(thumbnail(), MOD / "thumbnail.png")
+
+
+def tech_icon() -> Image.Image:
+    """Technology: the gun between its two portals."""
+    tech = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+    tech.alpha_composite(portal_icon("blue", 132), (4, 118))
+    tech.alpha_composite(portal_icon("orange", 132), (120, 6))
+    tech.alpha_composite(draw_gun(220), (18, 22))
+    return tech
+
+
+def thumbnail() -> Image.Image:
+    """Mod portal thumbnail (opaque)."""
     size = 144
     dx, dy = grid(size)
     r = np.hypot(dx, dy) / (size * 0.7)
@@ -345,7 +356,7 @@ def make_icons() -> None:
     thumb.alpha_composite(portal_icon("blue", 76), (2, 64))
     thumb.alpha_composite(portal_icon("orange", 76), (66, 4))
     thumb.alpha_composite(draw_gun(124), (10, 12))
-    save(thumb.convert("RGB"), MOD / "thumbnail.png")
+    return thumb.convert("RGB")
 
 
 # --------------------------------------------------------------------------------------------- sounds
@@ -479,7 +490,7 @@ def make_sounds() -> None:
 # --------------------------------------------------------------------------------------------- docs
 
 def make_docs() -> None:
-    """README previews built from the shipped sheets: the two portals swirling on a grass-coloured ground."""
+    """README previews built from the shipped files: the two portals swirling on a grass-coloured ground."""
     media = ROOT / "docs" / "media"
     media.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(0)
@@ -487,11 +498,18 @@ def make_docs() -> None:
     noise = np.kron(rng.normal(0, 1, (h // 4, w // 4)), np.ones((4, 4)))
     ground = np.clip(np.array([78, 84, 44]) / 255 * (1 + 0.1 * noise[..., None]), 0, 1)
     ground_img = rgba(ground, np.ones((h, w)))
+    sheets = {(c, layer): Image.open(GFX / "entity/portal" / f"portal-{c}-{layer}.png").convert("RGBA")
+              for c in ("blue", "orange") for layer in ("body", "glow")}
+
+    def cell(color: str, layer: str, f: int) -> Image.Image:
+        x, y = (f % 4) * PORTAL_SIZE, (f // 4) * PORTAL_SIZE
+        return sheets[color, layer].crop((x, y, x + PORTAL_SIZE, y + PORTAL_SIZE))
+
     frames = []
     for f in range(PORTAL_FRAMES):
         frame = ground_img.copy()
         for i, color in enumerate(("blue", "orange")):
-            body, glow = portal_frame(color, f)
+            body, glow = cell(color, "body", f), cell(color, "glow", f)
             layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
             layer.paste(body, (i * PORTAL_SIZE, 0))
             frame = over(layer, frame)
@@ -511,7 +529,9 @@ def make_docs() -> None:
 
 if __name__ == "__main__":
     import sys
-    parts = set(sys.argv[1:]) or {"portals", "shots", "effects", "icons", "sounds", "docs"}
+    # "fal" layers the fal-made art from assets/fal/ (see gen_fal_assets.py) over the procedural files; it is a
+    # no-op without those raws. Pass the parts explicitly (e.g. without "fal") for the purely procedural set.
+    parts = set(sys.argv[1:]) or {"portals", "shots", "effects", "icons", "sounds", "fal", "docs"}
     if "portals" in parts:
         make_portals()
     if "shots" in parts:
@@ -522,5 +542,8 @@ if __name__ == "__main__":
         make_icons()
     if "sounds" in parts:
         make_sounds()
+    if "fal" in parts:
+        import gen_fal_assets
+        gen_fal_assets.build()
     if "docs" in parts:
         make_docs()

@@ -103,3 +103,12 @@ Journal kept per the universal-modder `mod-any-game` loop. Newest entries at the
   paths in the journals with `<factorio>` and adding READMEs). Field note `docs/field-note.md`: `um kb check` PASS.
 - Not done: showcase video (no renderer, no client), publishing to the mod portal (the user's call), opening a
   PR with the field note to universal-modder (needs the human's OK).
+
+## fal art pass (2026-10-02, second session)
+- `fal.run`, `queue.fal.run`, `v3.fal.media` reachable after a network-policy change (bare `fal.media` 502s, unused).
+- Added `tools/gen_fal_assets.py` (`generate` via `um fal`, `build` offline from `assets/fal/`, `preview`);
+  `tools/gen_assets.py` now calls the fal build after the procedural steps (no-op without raws). Without a key or
+  raws the procedural output is byte-identical to before (checked with `git status` after a full rebuild).
+- **Blocked:** first fal call returned `HTTP 403 User is locked. Reason: Exhausted balance.` No assets generated yet.
+- A `FAL_KEY` file had been committed (`8e9eb71`); removed from the tree and gitignored. It stays in history, so the
+  key must be rotated.
